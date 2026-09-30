@@ -11,7 +11,7 @@ This skill is the source of truth for the plan's structure. Headings must match 
 
 - Do NOT write frontmatter. `run_metadata.py finalize` adds the md property keys (title, document_type, project_id, document_id, version, approved_date, privacy, tags). Properties belong to the md only; the docx never shows them.
 - First line: `# Test Plan - <project>` (the docx cover replaces it). The project name is inferred from the reference documents.
-- Level 1 sections use `##`, sub-sections `###`, and the Software/Hardware sub-headings `####`. Numbers are written in the heading text.
+- Level 1 sections use `##`, sub-sections `###`, and the Software/Hardware and In Scope/Out of Scope sub-headings `####`. Numbers are written in the heading text.
 - Tables are pipe tables with a header row. Use `N/A` for a cell that does not apply. A cell the sources do not answer and that QA fills by hand (names, IDs, dates of review or approval) is left empty. `TBD` is allowed only for open dates in 5. Test Schedule; never anywhere else, and never in 7. Test Closure.
 
 ## Sections, in order
@@ -63,7 +63,7 @@ This mirrors Emvigo's master template (`assets/master-template.docx`). Do not ad
 | B. Document Release History | Table `Version, Date, Author, Reviewed By, Reviewed On, Approved By, Approved On, Reasons`. One row: `V1.0`, the run date as `DD-Mon-YYYY`, Author to Approved On left empty for the team to fill, Reasons `Initial draft`. |
 | 1.1 Purpose | Short prose. Keep the template's meaning (a test plan documents the strategy used to verify the product meets its specification), in the project's terms. |
 | 1.2 Project Overview | Short prose from the sources. |
-| 1.3 Scope of Testing | `**In scope:**` paragraph, then `**Out of scope:**` paragraph. |
+| 1.3 Scope of Testing | Two `####` sub-headings, `#### In Scope` then `#### Out of Scope`, each holding `-` bullets, one scope item per bullet (no comma-separated paragraphs). Group long lists under a bold label line (`**Functional**`, `**Non-functional**`, `**Integrations**`, `**Environments**`) placed above that group's bullets; use only the groups the sources support, and skip the labels when a list has fewer than about 5 items. Cite the ID where one applies (e.g. `Login and password reset (REQ-01)`). An Out of Scope bullet may end with a short reason after a dash-free clause, e.g. `Load testing, as the client covers it in UAT`. |
 | 1.4 Reference Documents | Table `Process Element, Reference` with rows `Kick off Document` and `Project Plan`. The Reference cell is `[Provide document link]` unless a source gives the link. QA fills these in; never change the wording of the placeholder or the row names. |
 | 2.1 Manpower Requirement | Table `Resource Name, Designation/Role`. Names only when the sources name them; otherwise the name cell is empty and the role is filled. |
 | 2.2 Responsibilities by Activity | Table `Element, Resource Name, Designation/Role`. Rows: Test Planning, Test Case Creation, Test Case Review, Defect logging, Retesting, Release Note (add rows only if the sources name more activities). Release note preparation is always done by QA: its Designation/Role is `QA`. Resource names come from the sources only, otherwise empty. |
@@ -91,7 +91,7 @@ The `[Provide ...]` placeholders are what the QA team fills in after the run (ki
 3. Unknowns: if the sources do not say, write a labelled **Assumption** (add it to 3.1 as a bullet), leave a fill-in cell empty, or use `TBD` where the contract allows it. Never invent names, numbers, dates, tools or environments. If a value does not apply, write `N/A`.
 4. Say what is unknown plainly: "Test data for the payment sandbox has not been shared yet."
 5. Keep each section proportionate. A section with little to say gets a couple of sentences.
-6. Write section 1.3 as: in scope, out of scope. Out of scope only from the sources or as a labelled assumption.
+6. Write section 1.3 as two bulleted lists under `#### In Scope` and `#### Out of Scope`, one item per bullet, never as a comma-separated paragraph. Out of scope only from the sources or as a labelled assumption.
 
 ## Writing style: it must read like a person wrote it
 
@@ -102,7 +102,7 @@ The template's own sentences (purpose, strategy, integration, bug analysis and s
 **Do**
 - Prefer concrete detail over general claims. "Regression on the checkout and refund flows before each release" beats "comprehensive regression coverage".
 - Plain verbs, active voice, short paragraphs. Vary sentence length; a few short sentences are fine.
-- Use bullets only where the template uses bullets. Do not turn prose sections into lists.
+- Use bullets only where the template uses bullets (1.3 scope lists included). Do not turn prose sections into lists.
 - Do not restate the heading in the first sentence of its section.
 
 **Avoid**

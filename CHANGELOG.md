@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.3.0
+- Section 1.3 Scope of Testing is now two bulleted lists under `#### In Scope` and `#### Out of Scope` (one item per bullet, optional bold group labels) instead of comma-separated paragraphs.
+
 ## 1.2.0
 - No intake questions. The project name is inferred from the reference documents; nobody running the command is named in the document.
 - md properties follow the Emvigo Obsidian keys (title, document_type, project_id, document_id, version, approved_date, privacy, tags), left empty for the user to fill. The docx carries no properties.
