@@ -26,13 +26,6 @@ Usage: `/build-test-plan (--dir <folder> | --file <path>) --output-format <md|do
    - None: say so and ask again; offer **skip** (cover keeps a marked placeholder, note it in the summary).
    - Invalid images listed in `logos_invalid`: report them and ask again.
 
-4. **Intake.** Ask the user for the following (AskUserQuestion or plain questions). Re-ask required fields until answered. Optional fields left blank become `N/A`; never guess.
-   - Your name (required), email, role
-   - Project name (required unless the documents make it unambiguous), Project ID, Document ID
-   - Version (default 1.0), Reviewed By, Approved By, Status (default draft)
+4. **Archive the previous run.** `python "${CLAUDE_PLUGIN_ROOT}/scripts/archive_previous.py" --out <out>`. Do this only after the sources are confirmed to exist (preflight already checked the path). `assets/` is never moved.
 
-   Save the answers as JSON in the scratchpad: `run_by, email, role, project, project_id, document_id, version, reviewed_by, approved_by, status, cover_logo` (cover_logo = filename or empty when skipped).
-
-5. **Archive the previous run.** `python "${CLAUDE_PLUGIN_ROOT}/scripts/archive_previous.py" --out <out>`. Do this only after the sources are confirmed to exist (preflight already checked the path). `assets/` is never moved.
-
-6. **Delegate.** Launch the `test-plan-builder` agent with: PLUGIN_ROOT, INPUT_MODE, INPUT_PATH, OUT, OUTPUT_FORMAT, the intake JSON path, and any extra notes the user gave. Relay its summary to the user.
+5. **Delegate.** There are no questions about who is running this: the project name is inferred from the reference documents, and the property keys (project_id, document_id, version, approved_date) are left for the user to fill in the md. Launch the `test-plan-builder` agent with: PLUGIN_ROOT, INPUT_MODE, INPUT_PATH, OUT, OUTPUT_FORMAT, COVER_LOGO (the chosen filename, or empty when skipped) and any extra notes the user gave. Relay its summary to the user.

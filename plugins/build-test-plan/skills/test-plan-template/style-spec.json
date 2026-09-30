@@ -16,6 +16,7 @@
     "history_widths": [850, 1250, 950, 1080, 1080, 1080, 1080, 1371],
     "keyvalue_first_col": 3030
   },
-  "cover": { "logo_max_width_cm": 8.0, "logo_max_height_cm": 4.0, "placeholder_text": "[Cover logo not supplied]" },
+  "cover": { "logo_max_width_cm": 8.0, "logo_max_height_cm": 4.0, "placeholder_text": "[Cover logo not supplied]", "frame_width_twips": 8741, "frame_y_twips": 12900 },
+  "header": { "logo_width_cm": 4.4 },
   "roman_list_headings": ["assumptions", "dependencies", "risks", "sequence & criteria for integration testing"]
 }

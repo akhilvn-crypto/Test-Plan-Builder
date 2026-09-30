@@ -1,7 +1,7 @@
 """Render the test-plan markdown to .docx on top of Emvigo's master template.
 
 Usage: render_docx.py <plan.md> <plan.docx> [--spec style-spec.json] [--template master-template.docx]
-                      [--assets <out>/assets] [--header-logo ignored] [--no-refresh]
+                      [--assets <out>/assets] [--logo <cover logo file in assets>] [--project <name>] [--no-refresh]
 
 The md is the source of truth. The docx starts from the master template (cover, header, footer, fonts,
 heading numbering, table looks are the template's own); the template's sample body is removed and the
@@ -11,7 +11,6 @@ Prints a JSON result with any warnings. Exit 1 on failure.
 import argparse
 import copy
 import json
-import math
 import re
 import subprocess
 import sys
@@ -38,7 +37,9 @@ DEFAULT_SPEC = {
     "tables": {"cell_margin_lr_twips": 100, "narrow_headers": ["date", "version", "rev", "revision", "s.no", "s. no", "sl no", "no", "id", "sr. no", "iteration"],
                "narrow_max_weight": 12, "min_col_weight": 8, "max_col_weight": 60, "char_twips": 105,
                "history_widths": [850, 1250, 950, 1080, 1080, 1080, 1080, 1371], "keyvalue_first_col": 3030},
-    "cover": {"logo_max_width_cm": 8.0, "logo_max_height_cm": 4.0, "placeholder_text": "[Cover logo not supplied]"},
+    "cover": {"logo_max_width_cm": 8.0, "logo_max_height_cm": 4.0, "placeholder_text": "[Cover logo not supplied]",
+              "frame_width_twips": 8741, "frame_y_twips": 12900},
+    "header": {"logo_width_cm": 4.4},
     "toc": {"levels": "1-3"},
     "roman_list_headings": ["assumptions", "dependencies", "risks", "sequence & criteria for integration testing"],
 }
@@ -302,7 +303,6 @@ def fill_cover(doc, fm, spec, assets_dir, warnings):
     paras = [p for p in body.iterchildren() if p.tag == qn("w:p")]
     cv = spec["cover"]
     project = fm.get("project", "")
-    long_extra = max(0, math.ceil(len(project) / 28) - 1)
 
     for p in paras:
         txt = para_text(p)
@@ -372,17 +372,84 @@ def fill_cover(doc, fm, spec, assets_dir, warnings):
                 ppr = el("pPr")
                 p.insert(0, ppr)
             ppr.insert(0, el("pageBreakBefore"))
-    # keep the cover on one page when the project name wraps: drop empty spacer paragraphs
-    if long_extra:
-        empties = [p for p in body.iterchildren() if p.tag == qn("w:p") and not para_text(p) and not p.findall(".//" + qn("w:br"))
-                   and not p.findall(".//" + qn("w:drawing")) and not p.findall(".//" + qn("w:sectPr"))]
-        # only those between the title block and the company line (the long run of empties)
-        title_i = next(i for i, p in enumerate(body.iterchildren()) if para_text(p) == "for")
-        comp_i = next(i for i, p in enumerate(body.iterchildren()) if para_text(p).startswith("Emvigo Technologies"))
-        kids = list(body.iterchildren())
-        cand = [k for k in kids[title_i:comp_i] if k in empties]
-        for k in cand[: long_extra * 2]:
+    # The company/date block is pinned to a fixed spot on page 1 (a frame), and the spacer lines that used to
+    # push it down are dropped, so a wrapped project name or a tall logo can never move it onto page 2.
+    kids = list(body.iterchildren())
+    title_i = next(i for i, p in enumerate(kids) if para_text(p) == "for")
+    comp_i = next(i for i, p in enumerate(kids) if para_text(p).startswith("Emvigo Technologies"))
+    for k in kids[title_i:comp_i]:
+        if k.tag == qn("w:p") and not para_text(k) and not k.findall(".//" + qn("w:br")) and not k.findall(".//" + qn("w:drawing"))                 and k.find(".//" + qn("w:sectPr")) is None:
             body.remove(k)
+    comp = kids[comp_i]
+    ppr = comp.find(qn("w:pPr"))
+    if ppr is None:
+        ppr = el("pPr")
+        comp.insert(0, ppr)
+    for old in ppr.findall(qn("w:framePr")):
+        ppr.remove(old)
+    frame = el("framePr", w=cv["frame_width_twips"], hSpace=0, wrap="around", vAnchor="page", hAnchor="margin", y=cv["frame_y_twips"])
+    at = 0
+    for idx, c in enumerate(ppr):
+        if c.tag in (qn("w:pStyle"), qn("w:keepNext"), qn("w:keepLines"), qn("w:pageBreakBefore")):
+            at = idx + 1
+    ppr.insert(at, frame)
+
+
+def fix_headers(doc, spec):
+    """Header: smaller logo, no rule under it, no stacked empty paragraphs."""
+    width_emu = int(spec.get("header", {}).get("logo_width_cm", 4.4) * 360000)
+    seen = set()
+    for sec in doc.sections:
+        for hdr in (sec.header, sec.first_page_header):
+            if hdr.is_linked_to_previous or id(hdr._element) in seen:
+                continue
+            seen.add(id(hdr._element))
+            paras = list(hdr._element.iter(qn("w:p")))
+            for p in paras:
+                has_content = p.find(".//" + qn("w:drawing")) is not None or para_text(p).strip()
+                if not has_content:
+                    if len(paras) > 1:
+                        p.getparent().remove(p)
+                    continue
+                ppr = p.find(qn("w:pPr"))
+                if ppr is None:
+                    ppr = el("pPr")
+                    p.insert(0, ppr)
+                for tag in ("w:pBdr", "w:spacing"):
+                    for e in ppr.findall(qn(tag)):
+                        ppr.remove(e)
+                # schema order: pBdr, tabs, spacing, ind, jc, rPr; spacing goes before jc/rPr
+                anchor = next((c for c in ppr if c.tag in (qn("w:ind"), qn("w:jc"), qn("w:rPr"))), None)
+                sp_ = el("spacing", before=0, after=0)
+                if anchor is not None:
+                    anchor.addprevious(sp_)
+                else:
+                    ppr.append(sp_)
+                mark = ppr.find(qn("w:rPr"))
+                if mark is not None:
+                    for t in ("w:sz", "w:szCs"):
+                        e = mark.find(qn(t))
+                        if e is not None:
+                            e.set(qn("w:val"), "20")
+                for r in p.findall(qn("w:r")):
+                    if r.find(qn("w:drawing")) is None:
+                        for tab in r.findall(qn("w:tab")):
+                            r.remove(tab)  # tab stops that pushed the logo right; paragraph alignment does it now
+                        continue
+                    rpr = r.find(qn("w:rPr"))
+                    if rpr is not None:
+                        r.remove(rpr)  # the 48pt run size inflated the line height
+                    for inline in r.iter("{http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing}inline"):
+                        ext = inline.find("{http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing}extent")
+                        cx, cy = int(ext.get("cx")), int(ext.get("cy"))
+                        ncx, ncy = width_emu, int(cy * width_emu / cx)
+                        ext.set("cx", str(ncx))
+                        ext.set("cy", str(ncy))
+                        for a_ext in inline.iter("{http://schemas.openxmlformats.org/drawingml/2006/main}ext"):
+                            a_ext.set("cx", str(ncx))
+                            a_ext.set("cy", str(ncy))
+                        for k in ("distT", "distB"):
+                            inline.set(k, "0")
 
 
 def fix_footers(doc, fm):
@@ -610,6 +677,8 @@ def main():
     ap.add_argument("--spec")
     ap.add_argument("--template")
     ap.add_argument("--assets")
+    ap.add_argument("--logo", default="")  # cover logo: a file name inside --assets
+    ap.add_argument("--project", default="")  # overrides the project name taken from the md title
     ap.add_argument("--header-logo")  # accepted for compatibility; the template carries its own header logo
     ap.add_argument("--no-refresh", action="store_true", help="skip the Word round-trip that fills the table of contents")
     a = ap.parse_args()
@@ -634,6 +703,11 @@ def main():
         print(json.dumps({"ok": False, "error": f"Cannot read markdown: {e}"}))
         sys.exit(1)
     fm, body_md = parse_frontmatter(text)
+    title = fm.get("title", "")
+    fm["project"] = a.project.strip() or re.sub(r"\s+Test Plan$", "", title).strip() or "Test Plan"
+    fm["cover_logo"] = a.logo.strip() or fm.get("cover_logo", "N/A")
+    fm["run_at"] = datetime.now().isoformat(timespec="seconds")
+    fm["version"] = fm.get("version", "").strip() or "1.0"
 
     doc = Document(str(tpl))
     sec = doc.sections[0]
@@ -643,13 +717,14 @@ def main():
     patch_numbering(doc, spec)
     lists = ListNums(doc)
     cp = doc.core_properties
-    cp.author = fm.get("run_by", "")
-    cp.title = fm.get("title", "Test Plan")
-    cp.subject = fm.get("project", "")
+    cp.author = ""
+    cp.title = f"{fm['project']} Test Plan"
+    cp.subject = fm["project"]
     cp.comments = ""
-    cp.last_modified_by = fm.get("run_by", "")
+    cp.last_modified_by = ""
 
     fill_cover(doc, fm, spec, a.assets, warnings)
+    fix_headers(doc, spec)
     fix_footers(doc, fm)
     sdt = replace_toc(doc, spec)
     if sdt is None:

@@ -19,7 +19,7 @@ Marketplace repo for Emvigo QA plugins. Currently: **build-test-plan**.
 - `--output-format`: required. `docx` also delivers the `md`, and the docx is rendered from it.
 - `--out`: defaults to `./test-plan-output/`.
 
-The command creates `<out>/assets/` and asks you to drop the cover logo in it, then asks for your name, project details and so on. Previous outputs move to `<out>/history/`.
+The command creates `<out>/assets/` and asks you to drop the cover logo in it, and then reads the documents. It asks nothing about you: the project name is inferred from the documents, and the md's property keys (`project_id`, `document_id`, `version`, `approved_date`) are left empty for you to fill in. Previous outputs move to `<out>/history/`.
 
 ## Requirements
 

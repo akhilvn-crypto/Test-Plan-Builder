@@ -9,14 +9,14 @@ This skill is the source of truth for the plan's structure. Headings must match 
 
 ## Body format (markdown)
 
-- Do NOT write frontmatter. `run_metadata.py finalize` adds it.
-- First line: `# Test Plan - <project>` (the docx cover replaces it).
+- Do NOT write frontmatter. `run_metadata.py finalize` adds the md property keys (title, document_type, project_id, document_id, version, approved_date, privacy, tags). Properties belong to the md only; the docx never shows them.
+- First line: `# Test Plan - <project>` (the docx cover replaces it). The project name is inferred from the reference documents.
 - Level 1 sections use `##`, sub-sections `###`, and the Software/Hardware sub-headings `####`. Numbers are written in the heading text.
-- Tables are pipe tables with a header row. Use `N/A` for a known-empty cell, `TBD` only when the sources leave it open.
+- Tables are pipe tables with a header row. Use `N/A` for a cell that does not apply. A cell the sources do not answer and that QA fills by hand (names, IDs, dates of review or approval) is left empty. `TBD` is allowed only for open dates in 5. Test Schedule; never anywhere else, and never in 7. Test Closure.
 
 ## Sections, in order
 
-This mirrors Emvigo's master template (`assets/master-template.docx`). Do not add, drop, rename or reorder sections.
+This mirrors Emvigo's master template (`assets/master-template.docx`). Do not add, drop, rename or reorder sections, and do not add fields, rows or columns the template does not have (no author, prepared-by, status, revision or similar). Nobody running the command is named anywhere in the document.
 
 ```
 ## A. Document Version Control
@@ -59,28 +59,28 @@ This mirrors Emvigo's master template (`assets/master-template.docx`). Do not ad
 
 | Section | Form |
 |---|---|
-| A. Document Version Control | Table `Field, Value`, rows in this order: Title (`<Project> Test Plan`), Project ID, Document ID, Description (keep the template's sentence: "A test plan is a document detailing the objectives, resources, and processes for a specific test session for a software"), Approved date, Master Template ID (`ET/FQA01/A/05092023`), Privacy Classification (`Confidential. Shared with <who>`; `TBD` if the sources do not say). Values from the run info. |
-| B. Document Release History | Table `Version, Date, Author, Reviewed By, Reviewed On, Approved By, Approved On, Reasons`. First row: this run (`V<version>`, date as `DD-Mon-YYYY`, run_by, reviewed_by, `N/A` for a review/approval date not given, "Initial draft" or a real reason). |
+| A. Document Version Control | Table `Field, Value`, rows in this order: Title (`<Project> Test Plan`), Project ID, Document ID, Description (keep the template's sentence: "A test plan is a document detailing the objectives, resources, and processes for a specific test session for a software"), Approved date, Master Template ID (`ET/FQA01/A/05092023`), Privacy Classification (`Confidential. Shared with <client>` when the sources name the client; otherwise just `Confidential`). Project ID, Document ID and Approved date are left empty for the user. Nothing here is taken from the person running the command. |
+| B. Document Release History | Table `Version, Date, Author, Reviewed By, Reviewed On, Approved By, Approved On, Reasons`. One row: `V1.0`, the run date as `DD-Mon-YYYY`, Author to Approved On left empty for the team to fill, Reasons `Initial draft`. |
 | 1.1 Purpose | Short prose. Keep the template's meaning (a test plan documents the strategy used to verify the product meets its specification), in the project's terms. |
 | 1.2 Project Overview | Short prose from the sources. |
 | 1.3 Scope of Testing | `**In scope:**` paragraph, then `**Out of scope:**` paragraph. |
 | 1.4 Reference Documents | Table `Process Element, Reference` with rows `Kick off Document` and `Project Plan`. The Reference cell is `[Provide document link]` unless a source gives the link. QA fills these in; never change the wording of the placeholder or the row names. |
-| 2.1 Manpower Requirement | Table `Resource Name, Designation/Role`. |
-| 2.2 Responsibilities by Activity | Table `Element, Resource Name, Designation/Role`. Rows: Test Planning, Test Case Creation, Test Case Review, Defect logging, Retesting, Release Note (add rows only if the sources name more activities). |
+| 2.1 Manpower Requirement | Table `Resource Name, Designation/Role`. Names only when the sources name them; otherwise the name cell is empty and the role is filled. |
+| 2.2 Responsibilities by Activity | Table `Element, Resource Name, Designation/Role`. Rows: Test Planning, Test Case Creation, Test Case Review, Defect logging, Retesting, Release Note (add rows only if the sources name more activities). Release note preparation is always done by QA: its Designation/Role is `QA`. Resource names come from the sources only, otherwise empty. |
 | 2.3 Orientation/Training Plan | One lead-in line, then `-` bullets. |
 | 2.4 Inputs/Documents Needed | Numbered list (`1.`). Template items: Requirement Document, User Stories or Tasks from Jira, Release Plan, Test Case, Release note, Defect Report, Bug Analysis Report, Bug Report. |
 | 2.5 Test Environment Needed | `#### Software` and `#### Hardware`, each a table `S. No, Software` or `Hardware, Purpose`. |
 | 3.1 to 3.3 | `-` bullets (the renderer numbers them i., ii., iii.). Put mitigation for a risk in the same bullet. |
 | 4.1 to 4.2 | Short prose. |
 | 4.3 | `-` bullets (numbered i., ii. by the renderer). |
-| 5. Test Schedule | One line on the schedule basis, then table `Release, Sprint, Iteration, Start Date, End date`. `TBD` for dates the sources leave open. |
+| 5. Test Schedule | One line on the schedule basis, then table `Release, Sprint, Iteration, Start Date, End date`. `TBD` for dates the sources leave open (the only place `TBD` is allowed). |
 | 6. Test Deliverables | One lead-in line. 6.1 prose. 6.2 to 6.6 each: short prose where the template has it, then a table `Document, Location`. |
 | 6.2 | Rows `Test case`, `Test Reports`. Location `[Provide document link]`. |
 | 6.3 | Prose on the criteria, then row `Project Plan`, `[Provide document link]`. |
 | 6.4 | Rows `Bug Analysis Report`, `Bug Report` (`[Provide document link for all bugs exported from Jira]`). |
-| 6.5 | Row `Release Notes` (`[Provide folder link for release Notes]`). |
+| 6.5 | Say release notes are prepared by QA and kept in a common folder. Row `Release Notes` (`[Provide folder link for release Notes]`). |
 | 6.6 | Rows `Performance testing report`, `Security testing report` (`[Provide folder link for performance testing report]`, `[Provide folder link for security testing report]`). |
-| 7. Test Closure | Lead-in sentence, then a numbered list (`1.`): test environment and credentials, test coverage percentage, pass percentage, known issues, deliverables attached, cc list. |
+| 7. Test Closure | Lead-in sentence (the mail goes after the final UAT or production release, whichever the sources give; if they give neither, say "the final release"), then a numbered list (`1.`): test environment and credentials, test coverage percentage, pass percentage, known issues, deliverables attached, cc list. No `TBD`, no placeholders and no invented figures: these are the points the closing mail must cover, not values to fill in now. |
 
 The `[Provide ...]` placeholders are what the QA team fills in after the run (kick off document, project plan, report locations). Keep them exactly as written unless a source supplies the real link. Structure stays the same every run.
 
@@ -88,7 +88,7 @@ The `[Provide ...]` placeholders are what the QA team fills in after the run (ki
 
 1. Every statement must be grounded in the source documents. Use the project's own terms, module names, environments and dates.
 2. Give traceable IDs to extracted items (REQ-01, INT-01, NFR-01, RSK-01) and reference them where relevant, e.g. in scope and strategy. Assumptions, dependencies and risks are plain bullets, so cite an ID in the text when one applies.
-3. Unknowns: if the sources do not say, write a labelled **Assumption** (add it to 3.1 as a bullet) or `TBD`. Never invent names, numbers, dates, tools or environments. If a value does not apply, write `N/A`.
+3. Unknowns: if the sources do not say, write a labelled **Assumption** (add it to 3.1 as a bullet), leave a fill-in cell empty, or use `TBD` where the contract allows it. Never invent names, numbers, dates, tools or environments. If a value does not apply, write `N/A`.
 4. Say what is unknown plainly: "Test data for the payment sandbox has not been shared yet."
 5. Keep each section proportionate. A section with little to say gets a couple of sentences.
 6. Write section 1.3 as: in scope, out of scope. Out of scope only from the sources or as a labelled assumption.
@@ -96,6 +96,8 @@ The `[Provide ...]` placeholders are what the QA team fills in after the run (ki
 ## Writing style: it must read like a person wrote it
 
 The template's voice is short, practical and plain. Match it.
+
+The template's own sentences (purpose, strategy, integration, bug analysis and so on) may be tightened: fix the grammar, drop the stiffness, use the project's terms. Keep the meaning and the length close to the original. Do not turn them into marketing copy, and do not pad.
 
 **Do**
 - Prefer concrete detail over general claims. "Regression on the checkout and refund flows before each release" beats "comprehensive regression coverage".
