@@ -1,6 +1,6 @@
 {
   "name": "build-test-plan",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Builds a client-ready test plan from reference documents (md or docx) on Emvigo's template.",
   "author": { "name": "Emvigo Technologies" },
   "keywords": ["test-plan", "qa", "docx"]

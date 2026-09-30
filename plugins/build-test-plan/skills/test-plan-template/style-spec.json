@@ -1,13 +1,21 @@
 {
-  "template_version": "1.0.0",
-  "page": { "size": "A4", "width_twips": 11906, "height_twips": 16838, "margin_left_twips": 1440, "margin_right_twips": 1440, "margin_top_twips": 1440, "margin_bottom_twips": 1300 },
+  "template_version": "2.0.0",
+  "base_template": "assets/master-template.docx",
   "fonts": { "body": "Calibri", "heading": "Calibri" },
-  "sizes_pt": { "body": 11, "h1": 16, "h2": 13, "h3": 11.5, "cover_title": 32, "cover_project": 20, "cover_meta": 12, "table": 10, "header_footer": 9 },
-  "colors": { "heading": "1F3864", "body": "000000", "rule": "7F7F7F", "table_header_fill": "D9D9D9", "table_border": "808080", "placeholder": "C00000" },
-  "section_indent_twips": { "1": 0, "2": 0, "3": 0 },
-  "tables": { "cell_margin_twips": 80, "min_col_weight": 8, "max_col_weight": 60, "narrow_headers": ["date", "version", "rev", "revision", "s.no", "sl no", "no", "id", "sr. no"], "narrow_max_weight": 12 },
-  "cover": { "logo_max_width_cm": 8.0, "logo_max_height_cm": 4.0, "company": "Emvigo Technologies", "placeholder_text": "[Cover logo not supplied]" },
-  "header": { "logo_width_cm": 3.5, "rule_size_eighths_pt": 6 },
-  "toc": { "levels": "1-2", "title": "Table of Contents" },
-  "footer": { "version_prefix": "Version " }
+  "sizes_pt": { "body": 12, "table": 11, "table_history": 10, "h1": 14, "h2": 12, "h3": 12 },
+  "colors": { "placeholder": "C00000", "table_border": "000000", "history_border": "93CDDC", "history_fill": "DAEEF3" },
+  "spacing_twips": { "body_after": 120, "line": 264, "h1_before": 360, "h1_after": 120, "h2_before": 240, "h2_after": 100, "h3_before": 160, "h3_after": 80, "cell_before": 50, "cell_after": 50, "list_after": 60 },
+  "indent_twips": { "heading_text": 567, "h3_number": 567, "list_text": 567, "list_hang": 283, "list2_text": 1134 },
+  "tables": {
+    "cell_margin_lr_twips": 100,
+    "narrow_headers": ["date", "version", "rev", "revision", "s.no", "s. no", "sl no", "no", "id", "sr. no", "iteration"],
+    "narrow_max_weight": 12,
+    "min_col_weight": 8,
+    "max_col_weight": 60,
+    "char_twips": 105,
+    "history_widths": [850, 1250, 950, 1080, 1080, 1080, 1080, 1371],
+    "keyvalue_first_col": 3030
+  },
+  "cover": { "logo_max_width_cm": 8.0, "logo_max_height_cm": 4.0, "placeholder_text": "[Cover logo not supplied]" },
+  "roman_list_headings": ["assumptions", "dependencies", "risks", "sequence & criteria for integration testing"]
 }

@@ -31,7 +31,8 @@ Scripts live in `PLUGIN_ROOT/scripts`. Use `python`. Load and follow `PLUGIN_ROO
    `python scripts/run_metadata.py finalize --out OUT --body OUT/.body.md --source-file @<read-list> --unreadable @<unreadable-list>`
    This writes `OUT/<stem>.md` and `OUT/<stem>.sources.json`.
 8. **Render docx** (only if `OUTPUT_FORMAT` is `docx`):
-   `python scripts/render_docx.py OUT/<stem>.md OUT/<stem>.docx --spec skills/test-plan-template/style-spec.json --header-logo skills/test-plan-template/assets/header-logo.png --assets OUT/assets`
+   `python scripts/render_docx.py OUT/<stem>.md OUT/<stem>.docx --spec skills/test-plan-template/style-spec.json --assets OUT/assets`
+   The renderer builds the docx on `skills/test-plan-template/assets/master-template.docx` (cover, header, footer, numbering and table looks come from it) and, when Word is installed, lets Word fill the table of contents and page numbers.
    On failure keep the md, report the error, and leave history untouched.
 9. **Summary.** Report: files written; sources read (count) and unreadable files with reasons; cover logo used or skipped; open questions and TBDs; fallbacks used (renderer warnings); remaining style-lint findings.
 

@@ -28,6 +28,6 @@ The command creates `<out>/assets/` and asks you to drop the cover logo in it, t
 
 ## Notes
 
-- The bundled `header-logo.png` is a placeholder wordmark. Replace `plugins/build-test-plan/skills/test-plan-template/assets/header-logo.png` with the real Emvigo logo.
+- The docx is built on `plugins/build-test-plan/skills/test-plan-template/assets/master-template.docx`. To change the cover, header, footer or fonts, edit that file (the Emvigo header logo lives in it).
 - Set the real contact email in `.claude-plugin/marketplace.json` (`owner.email`).
 - Bump the version in `plugin.json` and `marketplace.json` together and record it in `CHANGELOG.md`.
