@@ -1,0 +1,13 @@
+{
+  "template_version": "1.0.0",
+  "page": { "size": "A4", "width_twips": 11906, "height_twips": 16838, "margin_left_twips": 1440, "margin_right_twips": 1440, "margin_top_twips": 1440, "margin_bottom_twips": 1300 },
+  "fonts": { "body": "Calibri", "heading": "Calibri" },
+  "sizes_pt": { "body": 11, "h1": 16, "h2": 13, "h3": 11.5, "cover_title": 32, "cover_project": 20, "cover_meta": 12, "table": 10, "header_footer": 9 },
+  "colors": { "heading": "1F3864", "body": "000000", "rule": "7F7F7F", "table_header_fill": "D9D9D9", "table_border": "808080", "placeholder": "C00000" },
+  "section_indent_twips": { "1": 0, "2": 0, "3": 0 },
+  "tables": { "cell_margin_twips": 80, "min_col_weight": 8, "max_col_weight": 60, "narrow_headers": ["date", "version", "rev", "revision", "s.no", "sl no", "no", "id", "sr. no"], "narrow_max_weight": 12 },
+  "cover": { "logo_max_width_cm": 8.0, "logo_max_height_cm": 4.0, "company": "Emvigo Technologies", "placeholder_text": "[Cover logo not supplied]" },
+  "header": { "logo_width_cm": 3.5, "rule_size_eighths_pt": 6 },
+  "toc": { "levels": "1-2", "title": "Table of Contents" },
+  "footer": { "version_prefix": "Version " }
+}
